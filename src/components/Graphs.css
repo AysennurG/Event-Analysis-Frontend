@@ -1,0 +1,89 @@
+.graphs {
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #fff;
+}
+
+.animated-stat {
+  min-width: 180px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #4f8cff22;
+  border: 3px solid #4f8cff;
+  padding: 24px 32px;
+  margin: 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: popIn 1s cubic-bezier(.68,-0.55,.27,1.55);
+  transition: border-color 0.3s;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: #3454d1;
+  margin-bottom: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.pie-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.pie-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #4f8cff22;
+  padding: 24px 18px 18px 18px;
+  min-width: 260px;
+  max-width: 320px;
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 320px;
+  justify-content: center;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.graphs-container, .graphs, .pie-row, .pie-card {
+  background: #fff !important;
+}
+
+.preview-modal,
+.event-detail-modal,
+.modal-content {
+  background: #fff !important;
+  opacity: 1 !important;
+  filter: none !important;
+}

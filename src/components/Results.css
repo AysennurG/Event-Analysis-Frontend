@@ -1,0 +1,22 @@
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px #0001;
+}
+.results-table th, .results-table td {
+  padding: 10px 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+.results-table th {
+  background: #00e676;
+  color: #fff;
+  font-weight: bold;
+}
+.results-table tr:last-child td {
+  border-bottom: none;
+}
