@@ -13,7 +13,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState(() => {
     const saved = localStorage.getItem("currentPage");
-    // Eğer hiç kayıt yoksa (ilk açılış), home ile başlat
+    // Eğer kayıtlı değer login veya register ise, home ile başlat
+    if (saved === "login" || saved === "register") return "home";
     return saved ? saved : "home";
   });
   const [pageData, setPageData] = useState(null);
