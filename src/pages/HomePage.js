@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import "../styles/HomePage.css";
 
@@ -7,9 +8,27 @@ import "../styles/HomePage.css";
   - Modal kutucuğunda kapatma (X) butonu vardır.
 */
 
-function HomePage({ setCurrentPage, isAuthenticated, toast, setToast }) {
+function HomePage({ setCurrentPage, isAuthenticated }) {
   const [showModal, setShowModal] = useState(false);
 
+  // Geçişli arka plan için:
+  const backgroundImages = [
+    "etkinlik1.jpg",
+    "etkinlik2.jpg",
+    "etkinlik3.jpg",
+    "etkinlik4.jpg",
+    
+
+  ];
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 4000); // 4 saniyede bir değişir
+    return () => clearInterval(interval);
+  }, []);
+/*
   const handleContinue = () => {
     if (isAuthenticated) {
       setCurrentPage("analysis");
@@ -17,41 +36,17 @@ function HomePage({ setCurrentPage, isAuthenticated, toast, setToast }) {
       setShowModal(true);
     }
   };
-
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3500);
-      return () => clearTimeout(timer);
-    }
-  }, [toast, setToast]);
-
+*/
   return (
-    <div className="homepage">
-      {toast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 32,
-            right: 32,
-            zIndex: 9999,
-            background: "#4BB543",
-            color: "#fff",
-            padding: "18px 32px",
-            borderRadius: 12,
-            boxShadow: "0 4px 24px #4BB54344",
-            fontWeight: 600,
-            fontSize: 18,
-            letterSpacing: 0.5,
-            transition: "all 0.3s",
-            minWidth: 260,
-            textAlign: "center",
-          }}
-        >
-          {toast.message}
-        </div>
-      )}
+    <div
+      className="homepage"
+      style={{
+        backgroundImage: `url(${backgroundImages[bgIndex]})`,
+        transition: "background-image 1s ease-in-out"
+      }}
+    >
       <div className="hero-section">
-        <h1 className="app-title">Face Analysis App</h1>
+        <h1 className="app-title">Etkinlik Katılımcı Analizi</h1>
         <div className="info-cards">
           <div className="info-card animated-card delay-0">
             <h2>Misyonumuz</h2>
@@ -63,24 +58,21 @@ function HomePage({ setCurrentPage, isAuthenticated, toast, setToast }) {
           </div>
           <div className="info-card animated-card delay-2">
             <h2>Amacımız</h2>
-            <p>
-              Fotoğraflardan yüzleri analiz ederek yaş, cinsiyet, ırk ve duygu
-              dağılımlarını grafiklerle sunmak.
-            </p>
+            <p>Fotoğraflardan yüzleri analiz ederek yaş, cinsiyet, ırk ve duygu dağılımlarını grafiklerle sunmak.</p>
           </div>
         </div>
-        <button className="continue-button" onClick={handleContinue}>
-          ETKİNLİK ANALİZİNE BAŞLA
-        </button>
+        {/*
+  <button className="continue-button" onClick={handleContinue}>
+    ETKİNLİK ANALİZİNE BAŞLA
+  </button>
+*/}
+
       </div>
 
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <button
-              className="modal-close"
-              onClick={() => setShowModal(false)}
-            >
+            <button className="modal-close" onClick={() => setShowModal(false)}>
               ×
             </button>
             <h2>Welcome!</h2>
