@@ -6,14 +6,17 @@ import jsPDF from "jspdf";
 import EventDetailPage from "./EventDetailPage";
 import "../styles/EventHistoryPage.css";
 
-function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreviewType, previewImg, setPreviewImg }) {
+function EventHistoryPage({ setCurrentPage, setPageData }) {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [previewType, setPreviewType] = useState(null); // "pdf" veya "png"
+  const [previewImg, setPreviewImg] = useState(null);
   const resultsRef = useRef();
+  const hiddenRef = useRef(); // Referans eklendi
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -54,7 +57,7 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
       });
       if (response.ok) {
         const data = await response.json();
-        setPageData(data); // data.results ve data.report olacak!
+        setPageData(data);
         setCurrentPage("eventDetail");
       } else {
         alert("Failed to fetch event details.");
@@ -66,31 +69,7 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
     }
   };
 
-  // PDF ve PNG indirme
-  const handleDownloadPDF = async () => {
-    if (!resultsRef.current) return;
-    const canvas = await html2canvas(resultsRef.current);
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
-    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save(`${selectedEvent?.event_name || "analiz"}_raporu.pdf`);
-  };
-
-  const handleDownloadPNG = async () => {
-    if (!resultsRef.current) return;
-    const canvas = await html2canvas(resultsRef.current);
-    const imgData = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = imgData;
-    link.download = `${selectedEvent?.event_name || "analiz"}_raporu.png`;
-    link.click();
-  };
-
-  // Menüden indirme işlemi
+  // Sadece önizleme ile indirme
   const handleMenuPreview = async (eventId, type) => {
     setLoadingDetail(true);
     try {
@@ -101,17 +80,18 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
         const data = await response.json();
         setSelectedEvent(data);
         setTimeout(async () => {
-          // Sadece grafik alanını yakala!
+          // Sadece analiz/grafik alanını yakala!
           if (resultsRef.current) {
             const canvas = await html2canvas(resultsRef.current, {
               backgroundColor: "#fff",
-              scale: 2
+              scale: 2,
+              useCORS: true,
             });
             const imgData = canvas.toDataURL("image/png");
             setPreviewImg(imgData);
             setPreviewType(type);
           }
-        }, 500); // Modal açıldıktan sonra biraz bekle
+        }, 1000); // 1 saniye bekle, gerekirse artır
       } else {
         alert("Failed to fetch event details.");
       }
@@ -121,6 +101,31 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
       setLoadingDetail(false);
       setMenuOpenId(null);
     }
+  };
+
+  // Önizleme modalında indir butonu
+  const handlePreviewDownload = () => {
+    if (!previewImg || !previewType) return;
+    if (previewType === "pdf") {
+      const img = new window.Image();
+      img.src = previewImg;
+      img.onload = () => {
+        const pdf = new jsPDF({
+          orientation: "landscape",
+          unit: "px",
+          format: [img.width, img.height],
+        });
+        pdf.addImage(previewImg, "PNG", 0, 0, img.width, img.height);
+        pdf.save(`${selectedEvent?.event_name || "analiz"}_raporu.pdf`);
+      };
+    } else {
+      const link = document.createElement("a");
+      link.href = previewImg;
+      link.download = `${selectedEvent?.event_name || "analiz"}_raporu.png`;
+      link.click();
+    }
+    setPreviewType(null);
+    setPreviewImg(null);
   };
 
   // Dışarı tıklanınca menüyü kapat
@@ -181,11 +186,21 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
                     </button>
                     {menuOpenId === event.id && (
                       <div className="menu-dropdown">
-                        <button onClick={(e) => { e.stopPropagation(); handleMenuPreview(event.id, "pdf"); }}>
-                          PDF Olarak İndir
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuPreview(event.id, "pdf");
+                          }}
+                        >
+                          Önizleme ile PDF İndir
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleMenuPreview(event.id, "png"); }}>
-                          PNG Olarak İndir
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuPreview(event.id, "png");
+                          }}
+                        >
+                          Önizleme ile PNG İndir
                         </button>
                       </div>
                     )}
@@ -215,34 +230,67 @@ function EventHistoryPage({ setCurrentPage, setPageData, previewType, setPreview
           )}
         </AnimatePresence>
       </motion.div>
-      {/* Modal ile analiz sonuçları göster */}
+
+      {/* Gizli analiz/grafik alanı (sadece önizleme için) */}
+      <div
+        ref={hiddenRef}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "-2000px",
+          minWidth: "1400px", // veya width: "auto"
+          opacity: 1,
+          pointerEvents: "none",
+          zIndex: -1,
+          background: "#fff",
+        }}
+      >
+        {selectedEvent && (
+          <EventDetailPage
+            eventDetails={selectedEvent}
+            resultsRef={resultsRef}
+          />
+        )}
+      </div>
+
+      {/* Önizleme modalı */}
       <AnimatePresence>
-        {(selectedEvent || loadingDetail) && (
+        {previewType && previewImg && (
           <motion.div
-            className="event-detail-modal"
-            initial={{ opacity: 0 }}
+            className="preview-modal"
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="modal-content" ref={resultsRef}>
+            <div className="preview-content">
               <button
                 className="close-btn"
-                onClick={() => setSelectedEvent(null)}
+                onClick={() => {
+                  setPreviewType(null);
+                  setPreviewImg(null);
+                }}
               >
                 Kapat
               </button>
-              {loadingDetail && !selectedEvent ? (
-                <div style={{ textAlign: "center", padding: "2rem" }}>Yükleniyor...</div>
-              ) : (
-                <EventDetailPage
-                  eventDetails={selectedEvent}
-                  previewType={previewType}
-                  previewImg={previewImg}
-                  setPreviewType={setPreviewType}
-                  setPreviewImg={setPreviewImg}
-                  resultsRef={resultsRef}
-                />
-              )}
+              <img
+                src={previewImg}
+                alt="Önizleme"
+                style={{
+                  maxWidth: "95vw",      // Ekranın %95'ine kadar büyüsün
+                  maxHeight: "90vh",     // Ekranın %90'ına kadar büyüsün
+                  margin: "1rem 0",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 24px #4f8cff22"
+                }}
+              />
+              <button
+                className="preview-btn"
+                onClick={handlePreviewDownload}
+              >
+                {previewType === "pdf"
+                  ? "PDF Olarak İndir"
+                  : "PNG Olarak İndir"}
+              </button>
             </div>
           </motion.div>
         )}

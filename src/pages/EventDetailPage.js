@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import Graphs from "../components/Graphs";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -16,8 +16,7 @@ function isEmptyReport(report) {
   );
 }
 
-function EventDetailPage({ eventDetails, previewType, previewImg, setPreviewType, setPreviewImg, resultsRef }) {
-  // Eğer resultsRef prop olarak gelmezse local ref oluştur
+function EventDetailPage({ eventDetails, resultsRef }) {
   const localRef = useRef();
   const activeRef = resultsRef || localRef;
 
@@ -25,7 +24,6 @@ function EventDetailPage({ eventDetails, previewType, previewImg, setPreviewType
     return <div>Yükleniyor...</div>;
   }
 
-  // Hem analizden sonra hem event history için uyumlu
   let results =
     eventDetails.analysis_results ||
     eventDetails.results ||
@@ -50,41 +48,36 @@ function EventDetailPage({ eventDetails, previewType, previewImg, setPreviewType
 
   const isEmpty = (!results || results.length === 0) || isEmptyReport(report);
 
-  // Önizleme oluştur
-  const handlePreview = async (type) => {
+  // Doğrudan indirme fonksiyonları
+  const handleDirectDownloadPDF = async () => {
     if (!activeRef.current) return;
     const canvas = await html2canvas(activeRef.current, {
       backgroundColor: "#fff",
-      scale: 2 // daha net görüntü için
+      scale: 2,
+      useCORS: true
     });
     const imgData = canvas.toDataURL("image/png");
-    setPreviewImg(imgData);
-    setPreviewType(type);
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save(`${event_name || "analiz"}_analiz.pdf`);
   };
 
-  // İndir (önizleme sonrası)
-  const handleDownload = () => {
-    if (!previewImg) return;
-    if (previewType === "pdf") {
-      const img = new window.Image();
-      img.src = previewImg;
-      img.onload = () => {
-        const pdf = new jsPDF({
-          orientation: "landscape",
-          unit: "px",
-          format: [img.width, img.height],
-        });
-        pdf.addImage(previewImg, "PNG", 0, 0, img.width, img.height);
-        pdf.save(`${event_name || "analiz"}_analiz.pdf`);
-      };
-    } else {
-      const link = document.createElement("a");
-      link.href = previewImg;
-      link.download = `${event_name || "analiz"}_analiz.png`;
-      link.click();
-    }
-    setPreviewType(null);
-    setPreviewImg(null);
+  const handleDirectDownloadPNG = async () => {
+    if (!activeRef.current) return;
+    const canvas = await html2canvas(activeRef.current, {
+      backgroundColor: "#fff",
+      scale: 2,
+      useCORS: true
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = imgData;
+    link.download = `${event_name || "analiz"}_analiz.png`;
+    link.click();
   };
 
   return (
@@ -99,15 +92,14 @@ function EventDetailPage({ eventDetails, previewType, previewImg, setPreviewType
       </p>
       <h3>Analiz Sonuçları</h3>
       <div style={{ marginBottom: 16 }}>
-        <button className="preview-btn" onClick={() => handlePreview("pdf")}>
-          PDF Önizle & İndir
+        <button className="preview-btn" onClick={handleDirectDownloadPDF}>
+          PDF Olarak İndir
         </button>
-        <button className="preview-btn" onClick={() => handlePreview("png")}>
-          PNG Önizle & İndir
+        <button className="preview-btn" onClick={handleDirectDownloadPNG}>
+          PNG Olarak İndir
         </button>
       </div>
-      {/* Grafikler ve analizler */}
-      <div ref={activeRef} className="graphs-container">
+      <div className="graphs-container" ref={activeRef}>
         {!isEmpty ? (
           <Graphs results={results} report={report} />
         ) : (
@@ -120,23 +112,6 @@ function EventDetailPage({ eventDetails, previewType, previewImg, setPreviewType
           </div>
         )}
       </div>
-      {/* Önizleme kutusu */}
-      {previewType && (
-        <div className="preview-modal">
-          <div className="preview-content">
-            <h3>İndirilecek {previewType === "pdf" ? "PDF" : "PNG"} Önizlemesi</h3>
-            <img src={previewImg} alt="Önizleme" style={{ maxWidth: "100%", borderRadius: 12, boxShadow: "0 4px 24px #3454d122" }} />
-            <div style={{ display: "flex", gap: "1rem", marginTop: 16 }}>
-              <button className="register-btn" onClick={handleDownload}>
-                İndir
-              </button>
-              <button className="white-btn" onClick={() => { setPreviewType(null); setPreviewImg(null); }}>
-                Vazgeç
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

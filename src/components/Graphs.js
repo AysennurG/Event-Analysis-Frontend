@@ -267,7 +267,7 @@ function Graphs({ report, results }) {
             datasets: [{
               label,
               data: data.datasets[0].data,
-              backgroundColor: "rgba(99,102,241,0.15)",
+              backgroundColor: "rgba(99,102,241,1)", // veya 1
               borderColor: "#6366F1",
               pointBackgroundColor: palette,
               pointBorderColor: "#fff",

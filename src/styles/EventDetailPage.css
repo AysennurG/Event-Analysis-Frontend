@@ -68,6 +68,8 @@
   background: #fff !important;
   padding: 24px;
   border-radius: 12px;
+    opacity: 1;
+  filter: none;
 }
 .preview-modal,
 .event-detail-modal,

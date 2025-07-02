@@ -76,14 +76,13 @@
   from { opacity: 0; transform: translateY(40px);}
   to { opacity: 1; transform: translateY(0);}
 }
-.graphs-container, .graphs, .pie-row, .pie-card {
-  background: #fff !important;
-}
-
-.preview-modal,
-.event-detail-modal,
-.modal-content {
-  background: #fff !important;
+.graphs-container,
+.graphs,
+.pie-row,
+.pie-card,
+.graphs-container canvas {
   opacity: 1 !important;
   filter: none !important;
+  background: #fff !important;
+  color: #222 !important;
 }
