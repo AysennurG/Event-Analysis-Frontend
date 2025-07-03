@@ -137,6 +137,26 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Etkinlik silme fonksiyonu
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm("Bu etkinliği silmek istediğinize emin misiniz?")) return;
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/events/${eventId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setEvents(events.filter(e => e.id !== eventId)); // Listeyi güncelle
+        setMenuOpenId(null);
+      } else {
+        alert(data.error || "Silme işlemi başarısız oldu.");
+      }
+    } catch (err) {
+      alert("Bir hata oluştu.");
+    }
+  };
+
   return (
     <div className="event-history-page">
       <h2>Etkinlik Geçmişi</h2>
@@ -172,44 +192,44 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 180, damping: 18 }}
+                onClick={() => handleEventClick(event.id)} // <-- Buraya ekleyin
               >
                 <div className="event-card-header">
                   <span className="event-name">{event.event_name}</span>
                   <div className="event-menu">
                     <button
                       className="menu-btn"
-                      onClick={() =>
-                        setMenuOpenId(menuOpenId === event.id ? null : event.id)
-                      }
+                      onClick={e => {
+                        e.stopPropagation();
+                        setMenuOpenId(menuOpenId === event.id ? null : event.id);
+                      }}
                     >
                       <FiMoreHorizontal size={22} />
                     </button>
                     {menuOpenId === event.id && (
                       <div className="menu-dropdown">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMenuPreview(event.id, "pdf");
-                          }}
-                        >
+                          onClick={e => { e.stopPropagation(); handleMenuPreview(event.id, "pdf"); }}>
                           Önizleme ile PDF İndir
                         </button>
                         <button
-                          onClick={(e) => {
+                          onClick={e => { e.stopPropagation(); handleMenuPreview(event.id, "png"); }}>
+                          Önizleme ile PNG İndir
+                        </button>
+                        <button
+                          style={{ color: "dark-blue" }}
+                          onClick={e => {
                             e.stopPropagation();
-                            handleMenuPreview(event.id, "png");
+                            handleDeleteEvent(event.id);
                           }}
                         >
-                          Önizleme ile PNG İndir
+                          Etkinliği Sil
                         </button>
                       </div>
                     )}
                   </div>
                 </div>
-                <div
-                  className="event-card-body"
-                  onClick={() => handleEventClick(event.id)}
-                >
+                <div className="event-card-body">
                   <span className="event-date">
                     {new Date(event.event_date).toLocaleDateString()}
                   </span>

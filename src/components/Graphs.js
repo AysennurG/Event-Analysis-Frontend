@@ -207,15 +207,15 @@ function AnimatedStat({ label, value, suffix = "", color = "#6366F1" }) {
 }
 
 const chartTypes = [
-  { value: "doughnut", label: "Doughnut" },
-  { value: "pie", label: "Pie" },
+  //{ value: "doughnut", label: "Doughnut" },
+  { value: "pie", label: "Pasta" },
   { value: "bar", label: "Bar" },
-  { value: "line", label: "Line" },
+  { value: "line", label: "Çizgi" },
   { value: "radar", label: "Radar" }
 ];
 
 function Graphs({ report, results }) {
-  const [ageChartType, setAgeChartType] = useState("doughnut");
+  const [ageChartType, setAgeChartType] = useState("bar");
   const [raceChartType, setRaceChartType] = useState("doughnut");
   const [genderChartType, setGenderChartType] = useState("doughnut");
   const [emotionChartType, setEmotionChartType] = useState("doughnut");
@@ -236,7 +236,7 @@ function Graphs({ report, results }) {
       height: 240,
       plugins: [shadowPlugin],
     };
-    if (chartType === "pie") {
+    if (chartType === "pasta") {
       return <Pie {...chartProps} options={baseOptions(label)} />;
     }
     if (chartType === "bar") {
@@ -257,7 +257,7 @@ function Graphs({ report, results }) {
         />
       );
     }
-    if (chartType === "line") {
+    if (chartType === "çizgi") {
       return (
         <Line
           {...chartProps}

@@ -13,11 +13,11 @@ function Navbar({ isAuthenticated, setCurrentPage, setIsAuthenticated }) {
 
   return (
     <nav className="navbar">
-      <h1>Face Analysis App</h1>
+      <h1>Etkinlik Katılımcı Analizi</h1>
       <ul>
         <li>
           <button onClick={() => setCurrentPage("home")} className="nav-button">
-            Home
+            Ana Sayfa
           </button>
         </li>
         {isAuthenticated ? (
@@ -25,7 +25,7 @@ function Navbar({ isAuthenticated, setCurrentPage, setIsAuthenticated }) {
             {/* Results kaldırıldı */}
             <li>
               <button onClick={() => setCurrentPage("events")} className="nav-button">
-                Event History
+                Etkinlik Geçmişi
               </button>
             </li>
             <li>
@@ -35,7 +35,7 @@ function Navbar({ isAuthenticated, setCurrentPage, setIsAuthenticated }) {
             </li>
             <li>
               <button onClick={handleLogout} className="nav-button">
-                Logout
+                Çıkış
               </button>
             </li>
           </>
@@ -43,12 +43,12 @@ function Navbar({ isAuthenticated, setCurrentPage, setIsAuthenticated }) {
           <>
             <li>
               <button onClick={() => setCurrentPage("login")} className="nav-button">
-                Login
+                Giriş Yap
               </button>
             </li>
             <li>
               <button onClick={() => setCurrentPage("register")} className="nav-button">
-                Register
+                Kaydol
               </button>
             </li>
           </>
