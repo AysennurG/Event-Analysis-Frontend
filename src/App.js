@@ -29,7 +29,7 @@ function App() {
 
   // Otomatik login kontrolü
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/auth/check", {
+    fetch(`${process.env.REACT_APP_API_URL}/auth/check`, {
       credentials: "include",
     })
       .then((res) => res.json())

@@ -21,7 +21,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/events", {
+        const response = await fetch("${process.env.REACT_APP_API_URL}/events", {
           credentials: "include",
         });
         if (response.ok) {
@@ -52,7 +52,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   const handleEventClick = async (eventId) => {
     setLoadingDetail(true);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/event/${eventId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/event/${eventId}`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -73,7 +73,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   const handleMenuPreview = async (eventId, type) => {
     setLoadingDetail(true);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/event/${eventId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/event/${eventId}`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -141,7 +141,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   const handleDeleteEvent = async (eventId) => {
     if (!window.confirm("Bu etkinliği silmek istediğinize emin misiniz?")) return;
     try {
-      const response = await fetch(`http://127.0.0.1:5000/events/${eventId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/events/${eventId}`, {
         method: "DELETE",
         credentials: "include",
       });

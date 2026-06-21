@@ -3,7 +3,7 @@ import "./Navbar.css";
 
 function Navbar({ isAuthenticated, setCurrentPage, setIsAuthenticated }) {
   const handleLogout = async () => {
-    await fetch("http://127.0.0.1:5000/logout", {
+    await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
       method: "GET",
       credentials: "include",
     });

@@ -13,7 +13,7 @@ function ProcessedImages({ images }) {
         {images.map((image, index) => (
           <div key={index} className="image-container">
             <img
-              src={`http://127.0.0.1:5000/uploads/${image}`}
+              src={`${process.env.REACT_APP_API_URL}/uploads/${image}`}
               alt={`Processed ${index}`}
             />
           </div>

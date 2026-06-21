@@ -144,7 +144,7 @@ function AnalysisPage({ setCurrentPage, setPageData }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -172,7 +172,7 @@ function AnalysisPage({ setCurrentPage, setPageData }) {
     ) {
       // Sonuçları terminale yazdırmak için backend'e gönder
       try {
-        await fetch("http://127.0.0.1:5000/print_results", {
+        await fetch(`${process.env.REACT_APP_API_URL}/print_results`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ results: uploadResult.analysis_results }),
