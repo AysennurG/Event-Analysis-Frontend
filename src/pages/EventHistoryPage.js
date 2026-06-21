@@ -12,7 +12,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   const [sortBy, setSortBy] = useState("date");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false); // eslint-disable-line no-unused-vars
   const [previewType, setPreviewType] = useState(null); // "pdf" veya "png"
   const [previewImg, setPreviewImg] = useState(null);
   const resultsRef = useRef();
@@ -21,7 +21,7 @@ function EventHistoryPage({ setCurrentPage, setPageData }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("${process.env.REACT_APP_API_URL}/events", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/events`, {
           credentials: "include",
         });
         if (response.ok) {

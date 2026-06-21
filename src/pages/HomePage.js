@@ -27,7 +27,7 @@ function HomePage({ setCurrentPage, isAuthenticated }) {
       setBgIndex((prev) => (prev + 1) % backgroundImages.length);
     }, 4000); // 4 saniyede bir değişir
     return () => clearInterval(interval);
-  }, []);
+  }, [backgroundImages.length]); // eslint-disable-line react-hooks/exhaustive-deps
 /*
   const handleContinue = () => {
     if (isAuthenticated) {

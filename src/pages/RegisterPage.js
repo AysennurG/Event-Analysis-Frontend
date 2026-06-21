@@ -7,7 +7,7 @@ function RegisterPage({ setIsAuthenticated, setCurrentPage, setToast }) {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false); // eslint-disable-line no-unused-vars
 
   // Şifre kuralları kontrolü
   const validatePassword = (pw) => {
