@@ -33,7 +33,7 @@ function LoginPage({ setIsAuthenticated, setCurrentPage }) {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google/google`;
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
   };
 
   const handleSignUp = () => {
