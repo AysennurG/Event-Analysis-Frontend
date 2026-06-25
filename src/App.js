@@ -27,8 +27,7 @@ function App() {
     localStorage.setItem("currentPage", currentPage);
   }, [currentPage]);
 
-  // Otomatik login kontrolü
-  useEffect(() => {
+  const checkAuth = () => {
     fetch(`${process.env.REACT_APP_API_URL}/auth/check`, {
       credentials: "include",
     })
@@ -43,7 +42,19 @@ function App() {
       .catch(() => {
         setIsAuthenticated(false);
       });
-  }, []);
+  };
+
+  // Otomatik login kontrolü - sayfa yüklenince ve Google OAuth sonrası
+  useEffect(() => {
+    checkAuth();
+    // Google OAuth'dan dönen redirect'i yakala
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("oauth") === "success") {
+      checkAuth();
+      url.searchParams.delete("oauth");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Eğer login olduysak ve currentPage hala "login" ise, ana sayfaya yönlendir
