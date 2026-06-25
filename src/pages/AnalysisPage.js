@@ -165,25 +165,29 @@ function AnalysisPage({ setCurrentPage, setPageData }) {
   };
 
   const handleViewResults = async () => {
-    if (
-      uploadResult &&
-      uploadResult.analysis_results &&
-      uploadResult.analysis_results.length > 0
-    ) {
-      // Sonuçları terminale yazdırmak için backend'e gönder
-      try {
-        await fetch(`${process.env.REACT_APP_API_URL}/print_results`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ results: uploadResult.analysis_results }),
-        });
-      } catch (err) {
-        console.error("Terminale yazdırma isteği başarısız:", err);
+    if (!uploadResult || !uploadResult.event_id) {
+      alert("Önce fotoğraf yükleyin.");
+      return;
+    }
+
+    try {
+      // Analiz arka planda çalışıyor, sonuçları event endpoint'inden çek
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/event/${uploadResult.event_id}`,
+        { credentials: "include" }
+      );
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        setPageData(data);
+        setCurrentPage("results");
+      } else {
+        // Analiz henüz bitmemiş olabilir, 5 saniye bekleyip tekrar dene
+        alert("Analiz henüz tamamlanıyor, lütfen birkaç saniye bekleyip tekrar deneyin.");
       }
-      setPageData(uploadResult); // <-- SADECE results değil, tüm uploadResult
-      setCurrentPage("results");
-    } else {
-      alert("Analiz sonucu bulunamadı. Lütfen yüz içeren bir fotoğraf yükleyin.");
+    } catch (err) {
+      console.error("Sonuçlar alınamadı:", err);
+      alert("Sonuçlar alınırken hata oluştu.");
     }
   };
 
